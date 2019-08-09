@@ -1,0 +1,25 @@
+.gratLines {
+    fill: none;
+    stroke: #999;
+    stroke-width: 1px;
+}
+
+.gratBackground {
+    fill: #D5E3FF;
+}
+
+svg:first-of-type {
+    float: left;
+    margin-right: 40px;
+    margin-bottom: 40px;
+}
+
+svg:last-of-type {
+    margin-top: 50px;
+}
+
+header h2 { height: 20px; }
+
+@media screen and (max-width: 1370px){
+    svg:first-of-type { float: none; }
+}
