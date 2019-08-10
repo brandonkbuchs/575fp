@@ -1,25 +1,13 @@
-.gratLines {
-    fill: none;
-    stroke: #999;
-    stroke-width: 1px;
-}
+	body {
+	font-family: sans-serif;
+	}
+	
+	#wrapper {
+	 width: 960px;
+	 margin: 15px auto;
+	}
 
-.gratBackground {
-    fill: #D5E3FF;
-}
-
-svg:first-of-type {
-    float: left;
-    margin-right: 40px;
-    margin-bottom: 40px;
-}
-
-svg:last-of-type {
-    margin-top: 50px;
-}
-
-header h2 { height: 20px; }
-
-@media screen and (max-width: 1370px){
-    svg:first-of-type { float: none; }
-}
+	#map {
+	 height: 450px;
+	 margin: 15px auto;
+	}
