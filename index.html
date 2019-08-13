@@ -1,173 +1,45 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-        <meta charset="utf-8">
-        <style>
-            body { margin: 0; }
-            #map { height: 965px; }
-            button { padding: 5px 15px; border-radius: 5px; border: 1px solid black; background: linear-gradient(lightgoldenrodyellow, #DAA520);}
-            button:hover { background: linear-gradient(#DAA520, lightgoldenrodyellow); }
-            h5 { font-family: "Noto Sans", sans-serif; font-size: 25px; font-weight: bold; text-align: center; margin: 1;}
-            h3 { font-family: "Noto Sans", sans-serif; font-size: 1em; font-weight: normal; text-align: center; margin: 0;}
-            h2 {font-family: "Noto Sans", sans-serif; font-size: .85em; font-weight: normal; }
-            h1 { font-family: "Noto Sans", sans-serif; font-size: 1.25em; font-weight: bold; text-align: left; margin: 0;}
-	    h4 { font-family: "Noto Sans", sans-serif; font-size: 1em; font-weight: bold; text-align: left; margin: 0;}
-
-            #side-panel {
-              position: absolute;
-              bottom: 0;
-              left: 15px;
-              width: 350px;
-              margin: 100px auto;
-              padding: 5px 20px;
-              background: rgba(256, 256, 256, 1);
-              border: 1px solid grey;
-              border-radius: 5px;
-              z-index: 1000;}
-            p { font-size: .9em; line-height: 1.5em; }
-
-            a { color: #005daa; text-decoration: none; }
-            a:hover { text-decoration: underline; }
-
-        }
-
-        </style>
-        <link href="https://fonts.googleapis.com/css?family=Noto+Sans" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css?family=Lora" rel="stylesheet">
-	<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"/>
-        <script
-            src="https://code.jquery.com/jquery-3.4.1.min.js"
-            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-            crossorigin="anonymous"></script>
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
-            integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
-            crossorigin=""/>
-        <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
-            integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
-            crossorigin=""></script>
-	<script src="http://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
-        <script src="js/leaflet-providers.js"></script>
-        <script>
-
-var globalMap;
-function createMap(){
-	//create the map
-    const map = L.map('map', {
-            center: [37.8, -96],
-            zoom: 5,
-            minZoom: 4
-    });
-    globalMap = map;
-    //add dark and light OSM base tilelayers
-    let controlLayers = L.control.layers().addTo(map);
-    var light = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
-    }).addTo(map);
-    var dark  = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png', {
-    }).addTo(map);
-    var thunderforest = L.tileLayer.provider('Thunderforest.MobileAtlas', {apikey:'ecbac3fd50f64532877a7f89024930a9'}).addTo(map);
-    //add selection menu for OSM tilelayers
-    controlLayers.addBaseLayer(dark, "Dark OSM Map tiles");
-    controlLayers.addBaseLayer(light, "Light OSM Map tiles");
-    controlLayers.addBaseLayer(thunderforest, "Thunderforest Map tiles");
-    //call getData function
-    getData(map);
-
-}
-
-//function to retrieve the data and place it on the map
-function getData(map){
-    //load the data
-    $.ajax("data/Top20Rank.geojson", {
-          dataType: "json",
-          success: function(response){
-              //call function to create proportional symbols
-              createPropSymbols(response, map);
-      }
-  });
-}
-//calculate the radius of each proportional symbol
-function calcPropRadius(attValue) {
-    //scale factor to adjust symbol size evenly
-    var scaleFactor = .015;
-    //area based on attribute value and scale factor
-    var area = attValue * scaleFactor;
-    //radius calculated based on area
-    var radius = Math.sqrt(area/Math.PI);
-    return radius;
-}
-//function to create proportional symbols
-function createPropSymbols(data, map){
-    //create marker options
-    var geojsonMarkerOptions = {
-          radius: 5,
-          fillColor: "#DAA520",
-          color: "#FFFFFF",
-          weight: .80,
-          opacity: 1,
-          fillOpacity: .85
-		};
-    //add selection menu for years
-    let controlLayers = L.control.layers().addTo(map);
-    for (let year=2012; year<=2018; year++){
-        let attribute = "YR" + year;
-    	//create a Leaflet GeoJSON layer and add it to the map
-        let layer = L.geoJson(data, {
-            pointToLayer: function (feature, latlng) {
-                var attValue = Number(feature.properties[attribute]);
-                geojsonMarkerOptions.radius = calcPropRadius(attValue);
-                //create circle markers
-                return L.circleMarker(latlng, geojsonMarkerOptions).bindPopup(feature.properties.COUNTY_NAM + "<br />" + year + " Housing Unit Totals: " + attValue);
-            }
-        }).addTo(map);
-        controlLayers.addBaseLayer(layer, year);
-    }
-    //timeline();
-}
-function timeline(){
-    let layers = $(".leaflet-control-layers-selector"),
-        checkedIndex, triggered = false;
-    layers.each(function(index, layer){
-        if (triggered) return;
-        if ($(layer).is(":checked")) checkedIndex = index;
-        if (index === checkedIndex + 1){
-            layer.click();
-            $("h1").text(layer.nextElementSibling.textContent);
-            triggered = true;
-        }
-    });
-    if (!triggered){
-        layers.eq(0).click();
-        $("h1").text("2012");
-    }
-    setTimeout(timeline, 1000);
-}
-$(document).ready(init);
-function init(){
-	createMap();
-  	//create map home button
-  	$("header button").on("click", function(){
-    	globalMap.flyTo([37.8, -96], 5); //[lat, lng], zoom
-    });
-}
-
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lora">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"/>
+    <link
+        rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+        integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+        crossorigin=""/>
+    <link rel="stylesheet" href="css/style.css"/>
+    <script
+        type="text/javascript"
+        src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous">
     </script>
-    </head>
+    <script
+        type="text/javascript"
+        src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+        integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+        crossorigin="">
+    </script>
+    <script type="text/javascript" src="http://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
+    <script type="text/javascript" src="js/leaflet-providers.js"></script>
+    <head></head>
     <body>
-      <header>
+        <header></header>
         <section id="side-panel">
-	  <h1>Location Affordability<h1>
-	  <h4><h4>
-          <h2>Housing and transportation costs consume about half of the average household budget, but it can be difficult for people to fully factor transportation costs into decisions about where to live and work. The Location Affordability Index (LAI) works to close this gap by providing estimates of household housing and transportation costs at the neighborhood level along with constituent data on the built environment and demographics.</h2>
-          <h2>Location Affordability Index has been developed and updated through the Department of Housing and Urban Development <a href="https://www.hudexchange.info/programs/location-affordability-index/">HUD Exchange</a> web application.</p>
-    <h1>Walkability<h1>
-    <h4><h4>
-    <h2>Walkability is a measure of how friendly an area is to walking. Walkability has health, environmental, and economic benefits. Factors influencing walkability include the presence or absence and quality of footpaths, sidewalks or other pedestrian rights-of-way, traffic and road conditions, land use patterns, building accessibility, and safety, among others.</h2>
-    <h2>Walk score data services are provided by the <a href="https://www.walkscore.com/professional/research.php">Walk Score Professional</a> web application.</p>
-
-          </div>
-          <p>Website created by Hunter R, Brandon B, & Nikki JH</a>.</p>
+            <h1>Location Affordability</h1>
+            <h4></h4>
+            <h2>Housing and transportation costs consume about half of the average household budget, but it can be difficult for people to fully factor transportation costs into decisions about where to live and work. The Location Affordability Index (LAI) works to close this gap by providing estimates of household housing and transportation costs at the neighborhood level along with constituent data on the built environment and demographics.</h2>
+            <h2>Location Affordability Index has been developed and updated through the Department of Housing and Urban Development <a href="https://www.hudexchange.info/programs/location-affordability-index/">HUD Exchange</a> web application.</h2>
+            <h1>Walkability</h1>
+            <h4></h4>
+            <h2>Walkability is a measure of how friendly an area is to walking. Walkability has health, environmental, and economic benefits. Factors influencing walkability include the presence or absence and quality of footpaths, sidewalks or other pedestrian rights-of-way, traffic and road conditions, land use patterns, building accessibility, and safety, among others.</h2>
+            <h2>Walk score data services are provided by the <a href="https://www.walkscore.com/professional/research.php">Walk Score Professional</a> web application.</h2>
+            <div></div>
+            <p>Website created by Hunter R, Brandon B, &amp; Nikki JH.</p>
         </section>
 
         <div id="map"></div>
-
+        <script type="text/javascript" src="js/main.js"></script>
     </body>
 </html>
