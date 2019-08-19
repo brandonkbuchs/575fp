@@ -73,14 +73,3 @@ a {
 a:hover {
     text-decoration: underline;
 }
-
-#logoContainer {
-    position: absolute;
-    z-index: 100;
-    top: 0;
-    right: 50px;
-    background-color: none;
-    border: 1px solid grey;
-    width: 280px;
-    height: 280px;
-}
