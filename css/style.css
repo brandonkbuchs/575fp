@@ -33,7 +33,9 @@ select {
     margin: 0 0 5px;
     color: 'white';
 }
-
+.info.leaflet-control {
+    margin: 30px 25px;
+}
 .legend {
     text-align: left;
     line-height: 18px;
