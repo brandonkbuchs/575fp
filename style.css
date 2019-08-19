@@ -1,0 +1,86 @@
+body {
+    font-family: sans-serif;
+    margin: 0px;
+}
+#wrapper {
+ width: 960px;
+ margin: 15px auto;
+}
+#map {
+ height: 965px;
+ margin: 15px auto;
+}
+button {
+    padding: 5px 15px;
+    border-radius: 5px;
+    border: 1px solid black;
+    background: linear-gradient(lightgoldenrodyellow, #DAA520);
+}
+button:hover {
+    background: linear-gradient(#DAA520, lightgoldenrodyellow);
+}
+h5 {
+    font-family: "Noto Sans", sans-serif;
+    font-size: 25px; font-weight: bold;
+    text-align: center; margin: 1;
+}
+h3 {
+    font-family: "Noto Sans", sans-serif;
+    font-size: 1em;
+    font-weight: normal;
+    text-align: center;
+    margin: 0;
+}
+h2 {
+    font-family: "Noto Sans", sans-serif;
+    font-size: .85em;
+    font-weight: normal;
+}
+h1 {
+    font-family: "Noto Sans", sans-serif;
+    font-size: 1.25em;
+    font-weight: bold;
+    text-align: left;
+    margin: 0;
+}
+h4 {
+    font-family: "Noto Sans", sans-serif;
+    font-size: 1em;
+    font-weight: bold;
+    text-align: left;
+    margin: 0;
+}
+#side-panel {
+    position: absolute;
+    bottom: 0;
+    left: 15px;
+    width: 350px;
+    margin: 100px auto;
+    padding: 5px 20px;
+    background: rgba(256, 256, 256, 1);
+    border: 1px solid grey;
+    border-radius: 5px;
+    z-index: 1000;
+}
+p {
+    font-size: .9em;
+    line-height: 1.5em;
+}
+a {
+    color: #005daa;
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+
+#logoContainer {
+    position: absolute;
+    z-index: 100;
+    top: 0;
+    right: 50px;
+    background-color: none;
+    border: 1px solid grey;
+    width: 280px;
+    height: 280px;
+}
